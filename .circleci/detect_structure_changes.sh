@@ -72,6 +72,9 @@ docker-compose exec -T mysql mysqldump --no-data --skip-opt --skip-comments --pa
 echo "Dump 4.0 with migrations index..."
 docker-compose exec -T elasticsearch curl -XGET "$APP_INDEX_HOSTS/_all/_mapping"|json_pp --json_opt=canonical,pretty > /tmp/dump_40_index_with_migrations.json
 
+echo "Dump 4.0 jobs list..."
+docker-compose exec -T mysql -e 'select code, job_name, connector from akeneo_batch_job_instance order by code asc' --password=$APP_DATABASE_PASSWORD --user=$APP_DATABASE_USER $APP_DATABASE_NAME > /tmp/jobs_40_with_migrations.txt
+
 echo "Install branch database and indexes..."
 APP_ENV=test make database
 
@@ -81,6 +84,9 @@ docker-compose exec -T mysql mysqldump --no-data --skip-opt --skip-comments --pa
 echo "Dump branch index..."
 docker-compose exec -T elasticsearch curl -XGET "$APP_INDEX_HOSTS/_all/_mapping"|json_pp --json_opt=canonical,pretty > /tmp/dump_branch_index.json
 
+echo "Dump branch jobs list..."
+docker-compose exec -T mysql -e 'select code, job_name, connector from akeneo_batch_job_instance order by code asc' --password=$APP_DATABASE_PASSWORD --user=$APP_DATABASE_USER $APP_DATABASE_NAME > /tmp/jobs_branch_with_migrations.txt
+
 echo "Compare database 40+PR migrations from database PR..."
 diff /tmp/dump_40_database_with_migrations.sql /tmp/dump_branch_database.sql --context=10
 
@@ -88,3 +94,6 @@ echo "Compare index 40+PR migrations from index PR..."
 sed -i -r 's/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}/uuid/g' /tmp/dump_40_index_with_migrations.json
 sed -i -r 's/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}/uuid/g' /tmp/dump_branch_index.json
 diff /tmp/dump_40_index_with_migrations.json /tmp/dump_branch_index.json --context=10
+
+echo "Compare 40+PR migrations jobs list from PR jobs list..."
+diff /tmp/jobs_40_with_migrations.txt  /tmp/jobs_branch_with_migrations.txt --context=10
