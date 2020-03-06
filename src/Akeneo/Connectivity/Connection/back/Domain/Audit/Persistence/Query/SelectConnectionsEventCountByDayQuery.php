@@ -11,5 +11,9 @@ namespace Akeneo\Connectivity\Connection\Domain\Audit\Persistence\Query;
  */
 interface SelectConnectionsEventCountByDayQuery
 {
-    public function execute(string $eventType, string $startDate, string $endDate): array;
+    public function execute(
+        string $eventType,
+        \DateTimeInterface $fromDateTime,
+        \DateTimeInterface $upToDateTime
+    ): array;
 }

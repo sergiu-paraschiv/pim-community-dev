@@ -49,13 +49,10 @@ final class WeeklyEventCounts
         );
 
         $dailyEventCounts = [];
-        foreach ($period as $date) {
-            $count = $eventData[$date->format('Y-m-d')] ?? 0;
+        foreach ($period as $dateTime) {
+            $date = $dateTime->format('Y-m-d');
 
-            $dailyEventCounts[] = new DailyEventCount(
-                (int) $count,
-                $date
-            );
+            $dailyEventCounts[] = new DailyEventCount($date, (int) $eventData[$date]);
         }
 
         return $dailyEventCounts;
