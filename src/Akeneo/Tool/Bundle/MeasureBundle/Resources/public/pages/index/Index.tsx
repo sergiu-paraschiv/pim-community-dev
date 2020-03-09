@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useCallback, useContext, useState} from 'react';
 import styled from 'styled-components';
 import {PageHeader} from 'akeneomeasure/shared/components/PageHeader';
 import {PageContent} from 'akeneomeasure/shared/components/PageContent';
@@ -6,6 +6,8 @@ import {PimView} from 'akeneomeasure/shared/legacy/pim-view/PimView';
 import {Breadcrumb} from 'akeneomeasure/shared/components/Breadcrumb';
 import {BreadcrumbItem} from 'akeneomeasure/shared/components/BreadcrumbItem';
 import {TranslateContext} from 'akeneomeasure/shared/translate/translate-context';
+import {Button} from 'akeneomeasure/shared/components/Button';
+import {CreateMeasurementFamily} from 'akeneomeasure/pages/create-measurement-family/CreateMeasurementFamily';
 
 const Helper = styled.div``;
 const List = styled.div``;
@@ -18,9 +20,15 @@ const ResultCount = styled.div``;
 
 export const Index = () => {
   const __ = useContext(TranslateContext);
+  const [createMeasurementFamilyModalIsOpen, setCreateMeasurementFamilyModalIsOpen] = useState<boolean>(false);
+  const handleCreateMeasurementFamilyClick = useCallback(() => {
+    setCreateMeasurementFamilyModalIsOpen(true);
+  }, [setCreateMeasurementFamilyModalIsOpen]);
 
   return (
     <>
+      {createMeasurementFamilyModalIsOpen && <CreateMeasurementFamily/>}
+
       <PageHeader
         userButtons={
           <PimView
@@ -28,6 +36,9 @@ export const Index = () => {
             viewName="pim-measurements-user-navigation"
           />
         }
+        buttons={[
+          <Button classNames={['AknButton--apply']} onClick={handleCreateMeasurementFamilyClick}>Create</Button>
+        ]}
         breadcrumb={
           <Breadcrumb>
             <BreadcrumbItem>{__('pim_menu.tab.settings')}</BreadcrumbItem>
