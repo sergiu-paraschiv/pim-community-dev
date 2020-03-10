@@ -6,3 +6,4 @@ pim_title:
 
 measurements:
     families: "{0}0 Measurement families|{1}1 Measurement family|]1, Inf[{{ itemsCount }} Measurement families"
+    close: Close
