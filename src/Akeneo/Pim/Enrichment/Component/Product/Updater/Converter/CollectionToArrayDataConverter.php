@@ -13,28 +13,14 @@ use Webmozart\Assert\Assert;
  * @copyright 2020 Akeneo SAS (http://www.akeneo.com)
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-final class StringToStringDataConverter implements ValueDataConverter
+final class CollectionToArrayDataConverter implements ValueDataConverter
 {
-    /** @var array */
     private $supportedAttributeTypes = [
-        AttributeTypes::IDENTIFIER => [
-            AttributeTypes::TEXT => true,
-            AttributeTypes::TEXTAREA => true,
+        AttributeTypes::REFERENCE_ENTITY_COLLECTION => [
+            AttributeTypes::OPTION_MULTI_SELECT => true,
         ],
-        AttributeTypes::TEXT => [
-            AttributeTypes::TEXTAREA => true,
-            AttributeTypes::OPTION_SIMPLE_SELECT => true,
-            AttributeTypes::REFERENCE_ENTITY_SIMPLE_SELECT => true,
-        ],
-        AttributeTypes::OPTION_SIMPLE_SELECT => [
-            AttributeTypes::TEXT => true,
-            AttributeTypes::TEXTAREA => true,
-            AttributeTypes::REFERENCE_ENTITY_SIMPLE_SELECT => true,
-        ],
-        AttributeTypes::REFERENCE_ENTITY_SIMPLE_SELECT => [
-            AttributeTypes::TEXT => true,
-            AttributeTypes::TEXTAREA => true,
-            AttributeTypes::OPTION_SIMPLE_SELECT => true,
+        AttributeTypes::OPTION_MULTI_SELECT => [
+            AttributeTypes::REFERENCE_ENTITY_COLLECTION => true,
         ],
     ];
 
@@ -51,8 +37,13 @@ final class StringToStringDataConverter implements ValueDataConverter
      */
     public function convert(ValueInterface $sourceValue, AttributeInterface $targetAttribute)
     {
-        Assert::string($sourceValue->getData());
+        Assert::isIterable($sourceValue->getData());
 
-        return $sourceValue->getData();
+        $converted = [];
+        foreach ($sourceValue->getData() as $data) {
+            $converted[] = (string) $data;
+        }
+
+        return $converted;
     }
 }

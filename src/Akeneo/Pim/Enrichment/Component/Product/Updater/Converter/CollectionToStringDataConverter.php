@@ -13,28 +13,20 @@ use Webmozart\Assert\Assert;
  * @copyright 2020 Akeneo SAS (http://www.akeneo.com)
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-final class StringToStringDataConverter implements ValueDataConverter
+final class CollectionToStringDataConverter implements ValueDataConverter
 {
-    /** @var array */
     private $supportedAttributeTypes = [
-        AttributeTypes::IDENTIFIER => [
+        AttributeTypes::OPTION_MULTI_SELECT => [
             AttributeTypes::TEXT => true,
             AttributeTypes::TEXTAREA => true,
         ],
-        AttributeTypes::TEXT => [
-            AttributeTypes::TEXTAREA => true,
-            AttributeTypes::OPTION_SIMPLE_SELECT => true,
-            AttributeTypes::REFERENCE_ENTITY_SIMPLE_SELECT => true,
-        ],
-        AttributeTypes::OPTION_SIMPLE_SELECT => [
+        AttributeTypes::REFERENCE_ENTITY_COLLECTION => [
             AttributeTypes::TEXT => true,
             AttributeTypes::TEXTAREA => true,
-            AttributeTypes::REFERENCE_ENTITY_SIMPLE_SELECT => true,
         ],
-        AttributeTypes::REFERENCE_ENTITY_SIMPLE_SELECT => [
+        AttributeTypes::PRICE_COLLECTION => [
             AttributeTypes::TEXT => true,
             AttributeTypes::TEXTAREA => true,
-            AttributeTypes::OPTION_SIMPLE_SELECT => true,
         ],
     ];
 
@@ -51,8 +43,13 @@ final class StringToStringDataConverter implements ValueDataConverter
      */
     public function convert(ValueInterface $sourceValue, AttributeInterface $targetAttribute)
     {
-        Assert::string($sourceValue->getData());
+        Assert::isIterable($sourceValue->getData());
 
-        return $sourceValue->getData();
+        $chunks = [];
+        foreach ($sourceValue->getData() as $data) {
+            $chunks[] = (string) $data;
+        }
+
+        return implode(', ', $chunks);
     }
 }
